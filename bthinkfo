@@ -1,0 +1,168 @@
+#!/bin/bash
+# bthinkfo
+# CPU core frequency, core temperature and fan speed script for ThinkPad Laptops
+
+version="bthinkfo 0.0.1" # 08-03-2024
+
+show_help() {
+    echo "Usage: $0 [options]"
+    echo -e "This script displays CPU core frequencies, core temperatures and fan speed on ThinkPad Laptops. \nValues are updated at a user specified time interval.\n"
+    echo "Options:"
+    echo "  -h, --help    Display this help message"
+    echo "  -v, --version Display script version"
+}
+
+while getopts ":hv" option; do
+    case "${option}" in
+        h | help)
+            show_help
+            exit 0
+            ;;
+        v | version)
+            echo "${version}"
+            exit 0
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            show_help
+            exit 1
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument." >&2
+            show_help
+            exit 1
+            ;;
+    esac
+done
+
+trap ctrl_c INT
+
+ctrl_c() {
+    echo -e "\nExiting..."
+    exit
+}
+
+while true; do
+    echo "Please enter desired update interval in seconds: "
+    read num
+    if [[ $num =~ ^[0-9]+$ ]]; then
+        break
+    else
+        echo "Invalid input. Please enter a positive whole number."
+    fi
+done
+
+echo
+
+while true; do
+    echo "Display temperatures in Celsius or Fahrenheit? Please enter C or F: "
+    read unit
+    if [[ $unit =~ ^[F,f]$ ]]; then
+        tunit="-f"
+        break
+    elif [[ $unit =~ ^[C,c]$ ]]; then
+        tunit=""
+        break
+    else
+        echo "Invalid input. Please enter either C or F."
+    fi
+done
+
+f_model() {
+    if [[ -d /system/app/ && -d /system/priv-app ]]; then
+        model="$(getprop ro.product.brand) $(getprop ro.product.model)"
+    elif [[ -f /sys/devices/virtual/dmi/id/product_name ||
+        -f /sys/devices/virtual/dmi/id/product_version ]]; then
+        model=$(< /sys/devices/virtual/dmi/id/product_name)
+        model+=" $(< /sys/devices/virtual/dmi/id/product_version)"
+    elif [[ -f /sys/firmware/devicetree/base/model ]]; then
+        model=$(< /sys/firmware/devicetree/base/model)
+    elif [[ -f /tmp/sysinfo/model ]]; then
+        model=$(< /tmp/sysinfo/model)
+    fi
+}
+
+f_cpu_type() {
+    cpu_type=$(cat /proc/cpuinfo | grep -i -m1 "model name" | sed -nr '/[Mm]odel name/ s/.*:\s*(.*) @ .*/\1/p')
+    if [ -z "$cpu_type" ]; then
+        cpu_type="" #remove line completely if var is empty
+    else
+        cpu_type+="\n"
+    fi
+
+    cpu_type_alt=$(cat /proc/cpuinfo | grep -i -m1 "model name" | sed -e 's/[Mm]odel name.*: //' | sed -e 's/  */ /g') #alternate method - not used
+    cpu_type_lscpu=$(lscpu | sed -nr '/Model name/ s/.*:\s*(.*) @ .*/\1/p') #alternate method - lscpu - not used
+    load_avg=$(cat /proc/loadavg | awk '{print $1", " $2", " $3}') #not currently used
+}
+
+f_cpu_freq() {
+    cpu_scaling_freq=$(lscpu | grep -i "mhz" | sed -e 's/   */  /g')
+    if [ -z "$cpu_scaling_freq" ]; then
+        cpu_scaling_freq="" #remove line completely if var is empty
+    else
+        cpu_scaling_freq+="\n"
+     fi
+
+    cpu_core_freq=$(awk '/MHz/{ temp+=$4; n++ } END{ printf("CPU MHz:  " "%.4f\n", temp/n) }' /proc/cpuinfo)
+    if [ -z "$cpu_core_freq" ]; then
+        cpu_core_freq="" #remove line completely if var is empty
+    else
+        cpu_core_freq+="\n"
+    fi
+}
+
+f_sensors() {
+    tp_cpu_sensor=$(sensors $tunit thinkpad-isa-0000 | grep -i "cpu" | sed -e 's/   */  /g')
+    if [ -z "$tp_cpu_sensor" ]; then
+        tp_cpu_sensor="ThinkPad CPU sensor not found."
+    fi
+
+    tp_gpu_sensor=$(sensors $tunit thinkpad-isa-0000 | grep -i "gpu" | sed -e 's/   */  /g')
+    if [ -z "$tp_gpu_sensor" ]; then
+        tp_gpu_sensor="ThinkPad GPU sensor not found."
+    fi
+
+    tp_fan_sensor=$(sensors $tunit thinkpad-isa-0000 | grep -i "fan" | sed -e 's/  */ /g') #not currently used
+    if [ -z "$tp_fan_sensor" ]; then
+        tp_fan_sensor="ThinkPad Fan sensor not found."
+    fi
+
+    all_cores_sensor=$(sensors $tunit coretemp-isa-0000 | grep -i "core " | sed -e 's/   */  /g') #not currently used
+}
+
+f_acpi_ibm_fan() {
+    acpi_fan=$(awk '{print "Fan "$1"  "$2}' /proc/acpi/ibm/fan)
+    if [ -z "$acpi_fan" ]; then
+        acpi_fan="ThinkPad Fan sensor not found.\nIs 'thinkpad-acpi' installed?"
+    fi
+}
+
+while :; do
+    f_model
+    f_cpu_type
+    f_cpu_freq
+    f_sensors
+    f_acpi_ibm_fan
+
+    output=$(clear
+    #uname -sorp
+    echo "---Model-------------------------------------------"
+    echo "${model}"
+    echo -e -n "${cpu_type}"
+    echo "---------------------------------------------------"
+    echo
+    echo "---Frequency---------------------------------------"
+    echo -e -n "$cpu_scaling_freq"
+    echo -e -n "$cpu_core_freq"
+    echo "---------------------------------------------------"
+    echo
+    echo "---Sensors-----------------------------------------"
+    echo "${tp_cpu_sensor}"
+    echo "${tp_gpu_sensor}"
+    #echo "${tp_fan_sensor^}"
+    echo -e "${acpi_fan}"
+    echo "---------------------------------------------------"
+    echo -e "\nUpdating every $num second(s). (Press Ctrl-C to exit)")
+    echo "$output"
+    sleep "$num"
+done
