@@ -2,7 +2,7 @@
 # bthinkfo
 # CPU core frequency, core temperature and fan speed script for ThinkPad Laptops
 
-version="bthinkfo 0.0.1" # 08-05-2024
+version="bthinkfo 0.0.2" # 08-05-2024
 
 show_help() {
     echo "Usage: $0 [options]"
@@ -45,7 +45,7 @@ ctrl_c() {
 while true; do
     echo "Please enter desired update interval in seconds: "
     read num
-    if [[ $num =~ ^[0-9]+$ ]]; then
+    if [[ "$num" =~ ^[0-9]+$ ]] && [[ "$num" != 0 ]]; then   
         break
     else
         echo "Invalid input. Please enter a positive whole number."
@@ -57,10 +57,10 @@ echo
 while true; do
     echo "Display temperatures in Celsius or Fahrenheit? Please enter C or F: "
     read unit
-    if [[ $unit =~ ^[F,f]$ ]]; then
+    if [[ "$unit" =~ ^[F,f]$ ]]; then
         tunit="-f"
         break
-    elif [[ $unit =~ ^[C,c]$ ]]; then
+    elif [[ "$unit" =~ ^[C,c]$ ]]; then
         tunit=""
         break
     else
