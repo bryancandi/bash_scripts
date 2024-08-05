@@ -2,7 +2,7 @@
 # bthinkfo
 # CPU core frequency, core temperature and fan speed script for ThinkPad Laptops
 
-version="bthinkfo 0.0.1" # 08-03-2024
+version="bthinkfo 0.0.1" # 08-05-2024
 
 show_help() {
     echo "Usage: $0 [options]"
@@ -138,6 +138,7 @@ f_acpi_ibm_fan() {
 }
 
 while :; do
+
     f_model
     f_cpu_type
     f_cpu_freq
@@ -162,7 +163,11 @@ while :; do
     #echo "${tp_fan_sensor^}"
     echo -e "${acpi_fan}"
     echo "---------------------------------------------------"
-    echo -e "\nUpdating every $num second(s). (Press Ctrl-C to exit)")
+    echo -e "\nUpdating every $num second(s). (Press 'Q' to quit)")
     echo "$output"
-    sleep "$num"
+    #sleep "$num"
+    read -t "$num" -r -s -n 1 key
+    if [ "$key" = "q" ] || [ "$key" = "Q" ]; then
+        break
+    fi
 done

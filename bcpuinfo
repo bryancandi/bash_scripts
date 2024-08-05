@@ -2,7 +2,7 @@
 # bcpuinfo
 # CPU core frequency, core temperature script
 
-version="bcpuinfo 0.0.1" # 08-03-2024
+version="bcpuinfo 0.0.1" # 08-05-2024
 
 show_help() {
     echo "Usage: $0 [options]"
@@ -119,6 +119,7 @@ f_sensors() {
 }
 
 while :; do
+
     f_model
     f_cpu_type
     f_cpu_freq
@@ -139,7 +140,11 @@ while :; do
     echo "---Sensors-----------------------------------------"
     echo -e "${core_temp_sensor}"
     echo "---------------------------------------------------"
-    echo -e "\nUpdating every $num second(s). (Press Ctrl-C to exit)")
+    echo -e "\nUpdating every $num second(s). (Press 'Q' to quit)")
     echo "$output"
-    sleep "$num"
+    #sleep "$num"
+    read -t "$num" -r -s -n 1 key
+    if [ "$key" = "q" ] || [ "$key" = "Q" ]; then
+        break
+    fi
 done
