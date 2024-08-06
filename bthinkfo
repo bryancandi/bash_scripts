@@ -1,6 +1,6 @@
 #!/bin/bash
 # bthinkfo
-# CPU core frequency, core temperature and fan speed script for ThinkPad Laptops - written in bash
+# CPU frequency, temperature and fan speed monitoring script for ThinkPad laptops - written in bash.
 # https://github.com/quakeaz/bash_scripts/blob/main/bthinkfo
 #
 # Copyright (C) 2024 by Bryan Candiliere
@@ -22,7 +22,7 @@ version="bthinkfo 0.0.2" # 08-05-2024
 
 show_help() {
     echo "Usage: $0 [options]"
-    echo -e "This script displays CPU core frequencies, core temperatures and fan speed on ThinkPad Laptops. \nValues are updated at a user specified time interval.\n"
+    echo -e "This script displays CPU frequency, temperature and fan speed on ThinkPad laptops. \nValues are updated at a user specified time interval.\n"
     echo "Options:"
     echo "  -h, --help    Display this help message"
     echo "  -v, --version Display script version"
