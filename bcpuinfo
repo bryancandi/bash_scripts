@@ -1,6 +1,6 @@
 #!/bin/bash
 # bcpuinfo
-# CPU core frequency, core temperature script - written in bash
+# CPU core frequency, core temperature script - written in bash.
 # https://github.com/quakeaz/bash_scripts/blob/main/bcpuinfo
 #
 # Copyright (C) 2024 by Bryan Candiliere
