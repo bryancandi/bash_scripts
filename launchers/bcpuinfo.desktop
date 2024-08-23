@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=bcpuinfo
+Exec=/usr/bin/bcpuinfo
+Type=Application
+Terminal=true
+Icon=/usr/share/icons/hicolor/512x512/apps/bcpuinfo.png
+

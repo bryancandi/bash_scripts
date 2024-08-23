@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=bthinkfo
+Exec=/usr/bin/bthinkfo
+Type=Application
+Terminal=true
+Icon=/usr/share/icons/hicolor/512x512/apps/bthinkfo.png
+
