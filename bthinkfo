@@ -117,8 +117,6 @@ ctrl_c() {
     exit
 }
 
-echo
-
 f_model() {
     if [[ -d /system/app/ && -d /system/priv-app ]]; then
         model="$(getprop ro.product.brand) $(getprop ro.product.model)"
