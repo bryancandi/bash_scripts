@@ -26,3 +26,6 @@ Options:
   -t, --time    Specify refresh interval in seconds
   -v, --version Display script version
 </pre>
+
+![Alt text](/screenshots/bthinkfo.png?raw=true "bthinkfo")
+![Alt text](/screenshots/bcpuinfo.png?raw=true "bcpuinfo")
