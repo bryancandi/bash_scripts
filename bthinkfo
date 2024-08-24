@@ -18,23 +18,81 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="bthinkfo 0.0.2" # 08-05-2024
+version="bthinkfo 0.0.3" # 08-23-2024
+
+num="2"     #Default to 2 second refresh interval
+tunit=""    #Default to Celsius temperature unit
 
 show_help() {
     echo "Usage: $0 [options]"
     echo -e "This script displays CPU frequency, temperature and fan speed on ThinkPad laptops. \nValues are updated at a user specified time interval.\n"
     echo "Options:"
     echo "  -h, --help    Display this help message"
+    echo "  -a, --ask     Display time and unit prompts"
+    echo "  -c            Show temperatures in degrees Celsius"
+    echo "  -f            Show temperatures in degrees Fahrenheit"
+    echo "  -t, --time    Specify refresh interval in seconds"
     echo "  -v, --version Display script version"
 }
 
-while getopts ":hv" option; do
+for arg in "$@"; do
+  shift
+  case "$arg" in
+    '--help')    set -- "$@" '-h'   ;;
+    '--ask')     set -- "$@" '-a'   ;;
+    '--time')    set -- "$@" '-t'   ;;
+    '--version') set -- "$@" '-v'   ;;
+    *)           set -- "$@" "$arg" ;;
+  esac
+done
+
+while getopts ":hacft:v" option; do
     case "${option}" in
-        h | help)
+        h)
             show_help
             exit 0
             ;;
-        v | version)
+        a)
+            while true; do
+                echo "Please enter desired update interval in seconds: "
+                read num
+                if [[ "$num" =~ ^[0-9]+$ ]] && [[ "$num" != 0 ]]; then
+                    break
+                else
+                    echo "Invalid input. Please enter a positive whole number."
+                fi
+            done
+
+            while true; do
+                echo "Display temperatures in Celsius or Fahrenheit? Please enter C or F: "
+                read unit
+                if [[ "$unit" =~ ^[F,f]$ ]]; then
+                    tunit="-f"
+                    break
+                elif [[ "$unit" =~ ^[C,c]$ ]]; then
+                    tunit=""
+                    break
+                else
+                    echo "Invalid input. Please enter either C or F."
+                fi
+            done
+            ;;
+        c)
+            tunit=""
+            ;;
+        f)
+            tunit="-f"
+            ;;
+        t | time)
+            num="$OPTARG"
+            if [[ "$num" =~ ^[0-9]+$ ]] && [[ "$num" != 0 ]]; then
+                num="$OPTARG"
+            else
+                echo "Invalid input: $OPTARG. Please enter a positive whole number."
+                exit 1
+            fi
+            ;;
+        v)
             echo "${version}"
             exit 0
             ;;
@@ -45,7 +103,8 @@ while getopts ":hv" option; do
             ;;
         :)
             echo "Option -$OPTARG requires an argument." >&2
-            show_help
+            echo "Try 'bthinkfo -h' for more information."
+            #show_help
             exit 1
             ;;
     esac
@@ -58,31 +117,7 @@ ctrl_c() {
     exit
 }
 
-while true; do
-    echo "Please enter desired update interval in seconds: "
-    read num
-    if [[ "$num" =~ ^[0-9]+$ ]] && [[ "$num" != 0 ]]; then   
-        break
-    else
-        echo "Invalid input. Please enter a positive whole number."
-    fi
-done
-
 echo
-
-while true; do
-    echo "Display temperatures in Celsius or Fahrenheit? Please enter C or F: "
-    read unit
-    if [[ "$unit" =~ ^[F,f]$ ]]; then
-        tunit="-f"
-        break
-    elif [[ "$unit" =~ ^[C,c]$ ]]; then
-        tunit=""
-        break
-    else
-        echo "Invalid input. Please enter either C or F."
-    fi
-done
 
 f_model() {
     if [[ -d /system/app/ && -d /system/priv-app ]]; then
@@ -108,7 +143,7 @@ f_cpu_type() {
 
     cpu_type_alt=$(cat /proc/cpuinfo | grep -i -m1 "model name" | sed -e 's/[Mm]odel name.*: //' | sed -e 's/  */ /g') #alternate method - not used
     cpu_type_lscpu=$(lscpu | sed -nr '/Model name/ s/.*:\s*(.*) @ .*/\1/p') #alternate method - lscpu - not used
-    load_avg=$(cat /proc/loadavg | awk '{print $1", " $2", " $3}') #not currently used
+    load_avg=$(cat /proc/loadavg | awk '{print $1", " $2", " $3}')
 }
 
 f_cpu_freq() {
@@ -166,6 +201,10 @@ while :; do
     echo "---Model-------------------------------------------"
     echo "${model}"
     echo -e -n "${cpu_type}"
+    echo "---------------------------------------------------"
+    echo
+    echo "---Load Average------------------------------------"
+    echo "$load_avg"
     echo "---------------------------------------------------"
     echo
     echo "---Frequency---------------------------------------"
