@@ -141,7 +141,7 @@ f_cpu_type() {
 
     cpu_type_alt=$(cat /proc/cpuinfo | grep -i -m1 "model name" | sed -e 's/[Mm]odel name.*: //' | sed -e 's/  */ /g') #alternate method - not used
     cpu_type_lscpu=$(lscpu | sed -nr '/Model name/ s/.*:\s*(.*) @ .*/\1/p') #alternate method - lscpu - not used
-    load_avg=$(cat /proc/loadavg | awk '{print $1", " $2", " $3}') #not currently used
+    load_avg=$(cat /proc/loadavg | awk '{print $1", " $2", " $3}')
 }
 
 f_cpu_freq() {
