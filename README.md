@@ -50,8 +50,8 @@ The .deb binary packages can be used on Debian and Ubuntu based distros.
 
 Change the file name to install the desired script and version number.
 
-Run `sudo dpkg -i bcpuinfo_0.0.3-1_all.deb` to install.
-Run `sudo dpkg -r bcpuinfo` to uninstall.
+Run `sudo dpkg -i bcpuinfo_0.0.3-1_all.deb` to install.<br>
+Run `sudo dpkg -r bcpuinfo` to uninstall.<br>
 
 ---
 ### Screenshots
