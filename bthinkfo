@@ -1,7 +1,7 @@
 #!/bin/bash
 # bthinkfo
 # CPU frequency, temperature and fan speed monitoring script for ThinkPad laptops - written in bash.
-# https://github.com/quakeaz/bash_scripts/blob/main/bthinkfo
+# https://github.com/bryancandi/cpu_scripts.git
 #
 # Copyright (C) 2024 by Bryan Candiliere
 #
