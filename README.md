@@ -36,13 +36,22 @@ Local install will install scripts to `~/bin`.<br>
 
 Run `make install-bcpuinfo` to install `bcpuinfo`.<br>
 Run `make install-bthinkfo` to install `bthinkfo`.<br>
-Run`make uninstall-bcpuinfo` to uninstall `bcpuinfo`.<br>
+Run `make uninstall-bcpuinfo` to uninstall `bcpuinfo`.<br>
 Run `make uninstall-bthinkfo` to uninstall `bthinkfo`.<br>
 
 Run `make install-local-bcpuinfo` to install `bcpuinfo` locally for current user.<br>
 Run `make install-local-bthinkfo` to install `bthinkfo` locally for current user.<br>
 Run `make uninstall-local-bcpuinfo` to uninstall `bcpuinfo` locally for current user.<br>
 Run `make uninstall-local-bthinkfo` to uninstall `bthinkfo` locally for current user.<br>
+
+### Debian/Ubunutu
+
+The .deb binary packages can be used on Debian and Ubuntu based distros.
+
+Change the file name to install the desired script and version number.
+
+Run `sudo dpkg -i bcpuinfo_0.0.3-1_all.deb` to install.
+Run `sudo dpkg -r bcpuinfo` to uninstall.
 
 ---
 ### Screenshots
