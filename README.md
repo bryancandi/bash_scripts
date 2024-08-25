@@ -44,7 +44,7 @@ Run `make install-local-bthinkfo` to install `bthinkfo` locally for current user
 Run `make uninstall-local-bcpuinfo` to uninstall `bcpuinfo` locally for current user.<br>
 Run `make uninstall-local-bthinkfo` to uninstall `bthinkfo` locally for current user.<br>
 
-### Debian/Ubunutu
+### Debian/Ubuntu
 
 The .deb binary packages can be used on Debian and Ubuntu based distros.
 
