@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="bthinkfo 0.0.3" # 08-23-2024
+version="bthinkfo 0.0.4" # 08-28-2024
 
 num="2"     #Default to 2 second refresh interval
 tunit=""    #Default to Celsius temperature unit
@@ -132,16 +132,16 @@ f_model() {
 }
 
 f_cpu_type() {
-    cpu_type=$(cat /proc/cpuinfo | grep -i -m1 "model name" | sed -nr '/[Mm]odel name/ s/.*:\s*(.*) @ .*/\1/p')
+    cpu_type=$(grep -i -m1 "model name" < /proc/cpuinfo | sed -nr '/[Mm]odel name/ s/.*:\s*(.*) @ .*/\1/p')
     if [ -z "$cpu_type" ]; then
         cpu_type="" #remove line completely if var is empty
     else
         cpu_type+="\n"
     fi
 
-    cpu_type_alt=$(cat /proc/cpuinfo | grep -i -m1 "model name" | sed -e 's/[Mm]odel name.*: //' | sed -e 's/  */ /g') #alternate method - not used
+    cpu_type_alt=$(grep -i -m1 "model name" < /proc/cpuinfo | sed -e 's/[Mm]odel name.*: //' | sed -e 's/  */ /g') #alternate method - not used
     cpu_type_lscpu=$(lscpu | sed -nr '/Model name/ s/.*:\s*(.*) @ .*/\1/p') #alternate method - lscpu - not used
-    load_avg=$(cat /proc/loadavg | awk '{print $1", " $2", " $3}')
+    load_avg=$(awk '{print $1", " $2", " $3}' < /proc/loadavg)
 }
 
 f_cpu_freq() {
