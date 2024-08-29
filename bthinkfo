@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="bthinkfo 0.0.4" # 08-28-2024
+version="bthinkfo 0.0.5" # 08-29-2024
 
 num="2"     #Default to 2 second refresh interval
 tunit=""    #Default to Celsius temperature unit
@@ -161,28 +161,20 @@ f_cpu_freq() {
 }
 
 f_sensors() {
-    tp_cpu_sensor=$(sensors $tunit thinkpad-isa-0000 | grep -i "cpu" | sed -e 's/   */  /g')
-    if [ -z "$tp_cpu_sensor" ]; then
-        tp_cpu_sensor="ThinkPad CPU sensor not found."
-    fi
-
-    tp_gpu_sensor=$(sensors $tunit thinkpad-isa-0000 | grep -i "gpu" | sed -e 's/   */  /g')
-    if [ -z "$tp_gpu_sensor" ]; then
-        tp_gpu_sensor="ThinkPad GPU sensor not found."
-    fi
-
-    tp_fan_sensor=$(sensors $tunit thinkpad-isa-0000 | grep -i "fan" | sed -e 's/  */ /g') #not currently used
-    if [ -z "$tp_fan_sensor" ]; then
-        tp_fan_sensor="ThinkPad Fan sensor not found."
-    fi
-
-    all_cores_sensor=$(sensors $tunit coretemp-isa-0000 | grep -i "core " | sed -e 's/   */  /g') #not currently used
+    if [[ -f /bin/sensors || -f /usr/bin/sensors ]]; then
+        thinkpad_sensors=$(sensors $tunit thinkpad-isa-0000 | grep -i -e "cpu" -e "gpu" | sed -e 's/   */  /g')
+    else
+        thinkpad_sensors=$"Sensors not found! \nIs \`lm-sensors\` package installed?"
 }
 
 f_acpi_ibm_fan() {
-    acpi_fan=$(awk '{print "Fan "$1"  "$2}' /proc/acpi/ibm/fan)
-    if [ -z "$acpi_fan" ]; then
-        acpi_fan="ThinkPad Fan sensor not found.\nIs 'thinkpad-acpi' installed?"
+    if [[ -f /proc/acpi/ibm/fan ]]; then
+        thinkpad_fan=$(awk '{print "Fan "$1"  "$2}' /proc/acpi/ibm/fan)
+    elif [[ -f /bin/sensors || -f /usr/bin/sensors ]]; then
+        thinkpad_fan_sensor=$(sensors $tunit thinkpad-isa-0000 | grep -i "fan" | sed -e 's/  */ /g')
+        thinkpad_fan=${thinkpad_fan_sensor^}
+    else
+        thinkpad_fan="Fan sensor not found! \nAre \`thinkpad-acpi\` and \`lm-sensors\` packages installed?"
     fi
 }
 
@@ -211,10 +203,9 @@ while :; do
     echo "---------------------------------------------------"
     echo
     echo "---Sensors-----------------------------------------"
-    echo "${tp_cpu_sensor}"
-    echo "${tp_gpu_sensor}"
+    echo "${thinkpad_sensors}"
     #echo "${tp_fan_sensor^}"
-    echo -e "${acpi_fan}"
+    echo -e "${thinkpad_fan}"
     echo "---------------------------------------------------"
     echo -e "\nUpdating every $num second(s). (Press 'Q' to quit)")
     echo "$output"

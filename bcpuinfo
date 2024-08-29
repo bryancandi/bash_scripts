@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="bcpuinfo 0.0.4" # 08-28-2024
+version="bcpuinfo 0.0.5" # 08-29-2024
 
 num="2"     #Default to 2 second refresh interval
 tunit=""    #Default to Celsius temperature unit
@@ -161,9 +161,10 @@ f_cpu_freq() {
 }
 
 f_sensors() {
-    core_temp_sensor=$(sensors $tunit coretemp-isa-0000 | grep -i "core " | sed -e 's/   */  /g')
-    if [ -z "$core_temp_sensor" ]; then
-        core_temp_sensor="CPU coretemp sensor not found. \nIs 'lm-sensors' package installed?"
+    if [[ -f /bin/sensors || -f /usr/bin/sensors ]]; then
+        core_temp_sensor=$(sensors $tunit coretemp-isa-0000 | grep -i "core " | sed -e 's/   */  /g')
+    else
+        core_temp_sensor="Sensors not found! \nIs \`lm-sensors\` package installed?"
     fi
 }
 
