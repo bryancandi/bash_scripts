@@ -165,6 +165,7 @@ f_sensors() {
         thinkpad_sensors=$(sensors $tunit thinkpad-isa-0000 | grep -i -e "cpu" -e "gpu" | sed -e 's/   */  /g')
     else
         thinkpad_sensors=$"Sensors not found! \nIs \`lm-sensors\` package installed?"
+    fi
 }
 
 f_acpi_ibm_fan() {
