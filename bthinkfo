@@ -162,7 +162,7 @@ f_cpu_freq() {
 
 f_sensors() {
     if [[ -f /bin/sensors || -f /usr/bin/sensors ]]; then
-        thinkpad_sensors=$(sensors $tunit thinkpad-isa-0000 | grep -i -e "cpu" -e "gpu" | sed -e 's/   */  /g')
+        thinkpad_sensors=$(sensors $tunit thinkpad-isa-* | grep -i -e "cpu" -e "gpu" | sed -e 's/   */  /g')
     else
         thinkpad_sensors=$"Sensors not found! \nIs \`lm-sensors\` package installed?"
     fi
@@ -172,7 +172,7 @@ f_acpi_ibm_fan() {
     if [[ -f /proc/acpi/ibm/fan ]]; then
         thinkpad_fan=$(awk '{print "Fan "$1"  "$2}' /proc/acpi/ibm/fan)
     elif [[ -f /bin/sensors || -f /usr/bin/sensors ]]; then
-        thinkpad_fan_sensor=$(sensors $tunit thinkpad-isa-0000 | grep -i "fan" | sed -e 's/  */ /g')
+        thinkpad_fan_sensor=$(sensors $tunit thinkpad-isa-* | grep -i "fan" | sed -e 's/  */ /g')
         thinkpad_fan=${thinkpad_fan_sensor^}
     else
         thinkpad_fan="Fan sensor not found! \nAre \`thinkpad-acpi\` and \`lm-sensors\` packages installed?"
