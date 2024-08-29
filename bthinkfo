@@ -204,8 +204,7 @@ while :; do
     echo "---------------------------------------------------"
     echo
     echo "---Sensors-----------------------------------------"
-    echo "${thinkpad_sensors}"
-    #echo "${tp_fan_sensor^}"
+    echo -e "${thinkpad_sensors}"
     echo -e "${thinkpad_fan}"
     echo "---------------------------------------------------"
     echo -e "\nUpdating every $num second(s). (Press 'Q' to quit)")
