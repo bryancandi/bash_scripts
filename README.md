@@ -1,12 +1,12 @@
 # cpu_scripts
 
 ### bthinkfo:
-CPU core frequency, core temperature and fan speed monitoring script for ThinkPad Laptops
+CPU core frequency, core temperature and fan speed monitoring script for ThinkPad Laptops.
 
 ---
 
 ### bcpuinfo:
-CPU core frequency and core temperature monitoring script - *coretemp sensors may not be available on AMD CPUs at this time*
+CPU core frequency and core temperature monitoring script - *coretemp sensors may not be available on all AMD CPUs at this time!*
 
 ---
 
