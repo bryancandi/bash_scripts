@@ -164,12 +164,14 @@ f_sensors() {
     if [[ -f /bin/sensors || -f /usr/bin/sensors ]]; then
         if sensors coretemp-* > /dev/null 2>&1; then
             #sensor exists and is functional
-            core_temp_sensor=$(sensors $tunit coretemp-* | grep -i "core " | sed -e 's/   */  /g')
+            #core_temp_sensor=$(sensors $tunit coretemp-* | grep -i "core " | sed -e 's/   */  /g')
+            core_temp_sensor=$(sensors $tunit coretemp-* | grep -i -e "core " -e "package ")
                 if [ -z "$core_temp_sensor" ]; then
                     core_temp_sensor="Sensor coretemp not found or an error occurred!"
                 fi
         elif sensors > /dev/null 2>&1; then
-            core_temp_sensor=$(sensors $tunit | grep -i "core " | sed -e 's/   */  /g')
+            #core_temp_sensor=$(sensors $tunit | grep -i "core " | sed -e 's/   */  /g')
+            core_temp_sensor=$(sensors $tunit | grep -i -e "core " -e "package ")
                 if [ -z "$core_temp_sensor" ]; then
                     core_temp_sensor="Sensor coretemp not found or an error occurred!"
                 fi
