@@ -6,7 +6,7 @@ CPU core frequency, core temperature and fan speed monitoring script for ThinkPa
 ---
 
 ### bcpuinfo:
-CPU core frequency and core temperature monitoring script - *currently for Intel CPUs only*
+CPU core frequency and core temperature monitoring script - *coretemp sensors may not be available on AMD CPUs at this time*
 
 ---
 
