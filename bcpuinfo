@@ -162,7 +162,21 @@ f_cpu_freq() {
 
 f_sensors() {
     if [[ -f /bin/sensors || -f /usr/bin/sensors ]]; then
-        core_temp_sensor=$(sensors $tunit coretemp-* | grep -i "core " | sed -e 's/   */  /g')
+        if sensors coretemp-* > /dev/null 2>&1; then
+            #sensor exists and is functional
+            core_temp_sensor=$(sensors $tunit coretemp-* | grep -i "core " | sed -e 's/   */  /g')
+                if [ -z "$core_temp_sensor" ]; then
+                    core_temp_sensor="Sensor coretemp not found or an error occurred!"
+                fi
+        elif sensors > /dev/null 2>&1; then
+            core_temp_sensor=$(sensors $tunit | grep -i "core " | sed -e 's/   */  /g')
+                if [ -z "$core_temp_sensor" ]; then
+                    core_temp_sensor="Sensor coretemp not found or an error occurred!"
+                fi
+        else
+            #sensor does not exist or an error occurred
+            core_temp_sensor="Sensor coretemp not found or an error occurred!"
+        fi
     else
         core_temp_sensor="Sensors not found! \nIs \`lm-sensors\` package installed?"
     fi
