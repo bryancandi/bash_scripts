@@ -1,6 +1,7 @@
 #!/bin/bash
 # bcpuinfo
 # CPU core frequency, core temperature script - written in bash.
+# For Intel CPUs - AMD CPUs may have inaccurate or missing sensor data.
 # https://github.com/bryancandi/cpu_scripts.git
 #
 # Copyright (C) 2024 by Bryan Candiliere
@@ -18,7 +19,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="bcpuinfo 0.0.5" # 08-29-2024
+version="bcpuinfo 0.0.6" # 08-31-2024
 
 num="2"     #Default to 2 second refresh interval
 tunit=""    #Default to Celsius temperature unit
@@ -131,25 +132,33 @@ f_model() {
     fi
 }
 
+f_load_avg() {
+    if [[ -f /proc/loadavg && -r /proc/loadavg ]]; then
+        load_avg=$(awk '{print $1", " $2", " $3}' < /proc/loadavg)
+    else
+        load_avg=$(uptime | grep -o 'load average: \(.*\)' | awk '{print $3, $4, $5}')
+    fi
+}
+
 f_cpu_type() {
     cpu_type=$(grep -i -m1 "model name" < /proc/cpuinfo | sed -nr '/[Mm]odel name/ s/.*:\s*(.*) @ .*/\1/p')
+    cpu_type+="\n"
     if [ -z "$cpu_type" ]; then
-        cpu_type="" #remove line completely if var is empty
+        if [[ -f /bin/lscpu || -f /usr/bin/lscpu ]]; then
+            cpu_type=$(lscpu | sed -nr '/Model name/ s/.*:\s*(.*) @ .*/\1/p')
+            cpu_type+="\n"
+        fi
     else
-        cpu_type+="\n"
+        cpu_scaling_freq="" #remove line completely if lscpu does not exist
     fi
-
-    cpu_type_alt=$(grep -i -m1 "model name" < /proc/cpuinfo | sed -e 's/[Mm]odel name.*: //' | sed -e 's/  */ /g') #alternate method - not used
-    cpu_type_lscpu=$(lscpu | sed -nr '/Model name/ s/.*:\s*(.*) @ .*/\1/p') #alternate method - lscpu - not used
-    load_avg=$(awk '{print $1", " $2", " $3}' < /proc/loadavg)
 }
 
 f_cpu_freq() {
-    cpu_scaling_freq=$(lscpu | grep -i "mhz" | sed -e 's/   */  /g')
-    if [ -z "$cpu_scaling_freq" ]; then
-        cpu_scaling_freq="" #remove line completely if var is empty
-    else
+    if [[ -f /bin/lscpu || -f /usr/bin/lscpu ]]; then
+        cpu_scaling_freq=$(lscpu | grep -i "mhz" | sed -e 's/   */  /g')
         cpu_scaling_freq+="\n"
+    else
+        cpu_scaling_freq="" #remove line completely if lscpu does not exist
     fi
 
     cpu_core_freq=$(grep -i "mhz" < /proc/cpuinfo | sed -e 's/[Cc][Pp][Uu] [Mm][Hh][Zz].*: /CPU MHz:  /g' | nl -w1 -s" " -v"0")
@@ -187,6 +196,7 @@ f_sensors() {
 while :; do
 
     f_model
+    f_load_avg
     f_cpu_type
     f_cpu_freq
     f_sensors
