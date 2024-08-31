@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="bthinkfo 0.0.6" # 08-31-2024
+version="bthinkfo 0.0.7" # 08-31-2024
 
 num="2"     #Default to 2 second refresh interval
 tunit=""    #Default to Celsius temperature unit
@@ -178,7 +178,7 @@ f_sensors() {
 }
 
 f_acpi_ibm_fan() {
-    if [[ -f /proc/acpi/ibm/fan ]]; then
+    if [[ -f /proc/acpi/ibm/fan && -r /proc/acpi/ibm/fan ]]; then
         thinkpad_fan=$(awk '{print "Fan "$1"  "$2}' /proc/acpi/ibm/fan)
     elif (command -v sensors &> /dev/null) && (sensors thinkpad-isa-* > /dev/null 2>&1); then     
         thinkpad_fan_sensor=$(sensors $tunit thinkpad-isa-* | grep -i "fan" | sed -e 's/  */ /g')
