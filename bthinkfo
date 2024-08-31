@@ -161,7 +161,7 @@ f_cpu_freq() {
         cpu_scaling_freq="" #remove line completely if lscpu does not exist
     fi
 
-    cpu_core_freq=$(awk '/MHz/{ temp+=$4; n++ } END{ printf("CPU MHz:  " "%.4f\n", temp/n) }' /proc/cpuinfo)
+    cpu_core_freq=$(awk '/MHz/ { sum += $4; count++ } END { if (count > 0) printf "CPU MHz: %.4f\n", sum / count }' /proc/cpuinfo)
     if [[ -z "$cpu_core_freq" ]]; then
         cpu_core_freq="" #remove line completely if var is empty
     else
