@@ -49,6 +49,8 @@ Run `make uninstall-local-bthinkfo` to uninstall `bthinkfo` locally for current 
 
 The .deb binary packages can be used on Debian and Ubuntu based distros.
 
+These packages will also install a launcher with an icon for each script (not automatic in Makefile installations).
+
 Change the file name to install the desired script and version number.
 
 Run `sudo dpkg -i bcpuinfo_0.0.3-1_all.deb` to install.<br>
