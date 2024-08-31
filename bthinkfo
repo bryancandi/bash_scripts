@@ -141,10 +141,11 @@ f_load_avg() {
 
 f_cpu_type() {
     cpu_type=$(grep -i -m1 "model name" < /proc/cpuinfo | sed -nr '/[Mm]odel name/ s/.*:\s*(.*) @ .*/\1/p')
-    cpu_type+="\n"
-    if [ -z "$cpu_type" ]; then
+    if [ -n "$cpu_type" ]; then
+        cpu_type+="\n"
+    elif [ -z "$cpu_type" ]; then
         if [[ -f /bin/lscpu || -f /usr/bin/lscpu ]]; then
-            cpu_type=$(lscpu | sed -nr '/Model name/ s/.*:\s*(.*) @ .*/\1/p')
+            cpu_type=$(lscpu | sed -nr '/[Mm]odel name/ s/.*:\s*(.*) @ .*/\1/p')
             cpu_type+="\n"
         fi
     else
