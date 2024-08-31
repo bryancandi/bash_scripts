@@ -141,10 +141,10 @@ f_load_avg() {
 
 f_cpu_type() {
     cpu_type=$(grep -i -m1 "model name" < /proc/cpuinfo | sed -nr '/[Mm]odel name/ s/.*:\s*(.*) @ .*/\1/p')
-    if [ -n "$cpu_type" ]; then
+    if [[ -n "$cpu_type" ]]; then
         cpu_type+="\n"
-    elif [ -z "$cpu_type" ]; then
-        if [[ -f /bin/lscpu || -f /usr/bin/lscpu ]]; then
+    elif [[ -z "$cpu_type" ]]; then
+        if command -v lscpu &> /dev/null; then
             cpu_type=$(lscpu | sed -nr '/[Mm]odel name/ s/.*:\s*(.*) @ .*/\1/p')
             cpu_type+="\n"
         fi
@@ -154,7 +154,7 @@ f_cpu_type() {
 }
 
 f_cpu_freq() {
-    if [[ -f /bin/lscpu || -f /usr/bin/lscpu ]]; then
+    if command -v lscpu &> /dev/null; then
         cpu_scaling_freq=$(lscpu | grep -i "mhz" | sed -e 's/   */  /g')
         cpu_scaling_freq+="\n"
     else
@@ -162,7 +162,7 @@ f_cpu_freq() {
     fi
 
     cpu_core_freq=$(awk '/MHz/{ temp+=$4; n++ } END{ printf("CPU MHz:  " "%.4f\n", temp/n) }' /proc/cpuinfo)
-    if [ -z "$cpu_core_freq" ]; then
+    if [[ -z "$cpu_core_freq" ]]; then
         cpu_core_freq="" #remove line completely if var is empty
     else
         cpu_core_freq+="\n"
@@ -170,7 +170,7 @@ f_cpu_freq() {
 }
 
 f_sensors() {
-    if [[ -f /bin/sensors || -f /usr/bin/sensors ]]; then
+    if (command -v sensors &> /dev/null) && (sensors thinkpad-isa-* > /dev/null 2>&1); then
         thinkpad_sensors=$(sensors $tunit thinkpad-isa-* | grep -i -e "cpu" -e "gpu" | sed -e 's/   */  /g')
     else
         thinkpad_sensors=$"Sensors not found! \nIs \`lm-sensors\` package installed?"
@@ -180,7 +180,7 @@ f_sensors() {
 f_acpi_ibm_fan() {
     if [[ -f /proc/acpi/ibm/fan ]]; then
         thinkpad_fan=$(awk '{print "Fan "$1"  "$2}' /proc/acpi/ibm/fan)
-    elif [[ -f /bin/sensors || -f /usr/bin/sensors ]]; then
+    elif (command -v sensors &> /dev/null) && (sensors thinkpad-isa-* > /dev/null 2>&1); then     
         thinkpad_fan_sensor=$(sensors $tunit thinkpad-isa-* | grep -i "fan" | sed -e 's/  */ /g')
         thinkpad_fan=${thinkpad_fan_sensor^}
     else
@@ -221,7 +221,7 @@ while :; do
     echo "$output"
     #sleep "$num"
     read -t "$num" -r -s -n 1 key
-    if [ "$key" = "q" ] || [ "$key" = "Q" ]; then
+    if [[ "$key" = "q" ]] || [[ "$key" = "Q" ]]; then
         break
     fi
 done
