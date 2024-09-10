@@ -1,0 +1,73 @@
+#!/bin/bash
+# bintelpwr
+# Display current package and core wattage for INTEL Processors
+# Copyright (C) 2024 by Bryan Candiliere
+#
+
+# Trap Ctrl-C and exit
+trap ctrl_c INT
+
+ctrl_c() {
+    echo -e "\nExiting."
+    exit 0
+}
+
+# Function to check if the powercap/intel-rapl exists
+check_powercap_file() {
+    if [[ ! -d /sys/class/powercap/intel-rapl ]]; then
+        echo "Powercap not found. Exiting."
+        exit 1
+    fi
+}
+
+# Run check function
+check_powercap_file
+
+f_cpu_type() {
+    cpu_type=$(grep -i -m1 "model name" < /proc/cpuinfo | sed -nr '/[Mm]odel name/ s/.*:\s*(.*) @ .*/\1/p')
+    if [[ -n "$cpu_type" ]]; then
+        cpu_type+="\n"
+    elif [[ -z "$cpu_type" ]]; then
+        if command -v lscpu &> /dev/null; then
+            cpu_type=$(lscpu | sed -nr '/[Mm]odel name/ s/.*:\s*(.*) @ .*/\1/p')
+            cpu_type+="\n"
+        fi
+    else
+        cpu_scaling_freq="" #remove line completely if lscpu does not exist
+    fi
+}
+
+#powercap_devices=$(ls /sys/class/powercap/intel-rapl:*/energy_uj)
+#powercap_names=$(ls /sys/class/powercap/intel-rapl:*/name)
+powercap_devices=$(ls /sys/class/powercap/ | grep :)
+
+while true; do
+    f_cpu_type
+
+    output=$(clear
+    printf "\033[1m$cpu_type\033[0m\n"
+    for device in $powercap_devices; do
+
+        # Get device names
+        name=$(cat "/sys/class/powercap/$device/name")
+
+        # Get initial package/core power usage
+        initial_power=$(cat "/sys/class/powercap/$device/energy_uj")
+
+        # Sleep for one second for accurate power measurement
+        sleep 1
+
+        # Get current package/core power usage
+        current_power=$(cat "/sys/class/powercap/$device/energy_uj")
+
+        # Calculate power difference and convert from microjoules (uJ) to watts
+        power_diff=$(echo "scale=2; ($current_power - $initial_power) / 1000000" | bc)
+
+        # Display current CPU power usage and power difference
+        #echo "$name: $power_diff watts" | column -t
+        printf "%-15s %s\n" "$name:" "$power_diff watts"
+    done)
+
+    echo "$output"
+
+done
