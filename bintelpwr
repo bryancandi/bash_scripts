@@ -12,6 +12,17 @@ ctrl_c() {
     exit 0
 }
 
+# Function to check if the script is running as root
+check_root() {
+    if [[ "$EUID" -ne 0 ]]
+        then echo "This script requires root privileges to run."
+        exit 1
+    fi
+}
+
+# Run check function
+check_root
+
 # Function to check if the powercap/intel-rapl exists
 check_powercap_file() {
     if [[ ! -d /sys/class/powercap/intel-rapl ]]; then
@@ -33,7 +44,8 @@ f_cpu_type() {
             cpu_type+="\n"
         fi
     else
-        cpu_scaling_freq="" #remove line completely if lscpu does not exist
+        cpu_type="Unknown CPU type!"
+        cpu_type+="\n"
     fi
 }
 
@@ -45,7 +57,7 @@ while true; do
     f_cpu_type
 
     output=$(clear
-    printf "\033[1m$cpu_type\033[0m\n"
+    printf "\033[1m%s\033[0m\n" "$cpu_type"
     for device in $powercap_devices; do
 
         # Get device names
