@@ -35,17 +35,10 @@ check_powercap_file() {
 check_powercap_file
 
 f_cpu_type() {
-    cpu_type=$(grep -i -m1 "model name" < /proc/cpuinfo | sed -nr '/[Mm]odel name/ s/.*:\s*(.*) @ .*/\1/p')
-    if [[ -n "$cpu_type" ]]; then
-        cpu_type+="\n"
-    elif [[ -z "$cpu_type" ]]; then
-        if command -v lscpu &> /dev/null; then
-            cpu_type=$(lscpu | sed -nr '/[Mm]odel name/ s/.*:\s*(.*) @ .*/\1/p')
-            cpu_type+="\n"
-        fi
+    if [[ -f /proc/cpuinfo ]]; then
+        cpu_type=$(grep -i -m1 "model name" < /proc/cpuinfo | sed -nr '/[Mm]odel name/ s/.*:\s*(.*) @ .*/\1/p')
     else
         cpu_type="Unknown CPU type!"
-        cpu_type+="\n"
     fi
 }
 
@@ -57,7 +50,9 @@ while true; do
     f_cpu_type
 
     output=$(clear
-    printf "\033[1m%s\033[0m\n" "$cpu_type"
+
+    printf "\033[1m%s\033[0m\n\n" "$cpu_type"
+
     for device in $powercap_devices; do
 
         # Get device names
