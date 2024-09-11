@@ -51,10 +51,10 @@ while true; do
 
     output=$(clear
 
-    printf "\033[1m%s\033[0m\n\n" "$cpu_type"
+    printf "\033[1m%s\033[0m\n" "$cpu_type"
 
     for device in $powercap_devices; do
-
+        (
         # Get device names
         name=$(cat "/sys/class/powercap/$device/name")
 
@@ -73,8 +73,24 @@ while true; do
         # Display current CPU power usage and power difference
         #echo "$name: $power_diff watts" | column -t
         printf "%-15s %s\n" "$name:" "$power_diff watts"
+        ) &
+
     done)
 
-    echo "$output"
+    wait
 
+    #echo "$output" | sort -n -k 2,2 # Numeric sort
+    
+    # Separate the output into the first line and powercap devices to be sorted
+    header_line_cpu=$(head -n 1 <<< "$output")
+    powercap_device_lines=$(tail -n +2 <<< "$output")
+
+    # Sort the devices alphabetically by the first field (device name)
+    sorted_powercap_device_lines=$(echo "$powercap_device_lines" | sort -k 1)
+
+    # Combine the first line with the sorted remaining lines
+    final_output="$header_line_cpu\n\n$sorted_powercap_device_lines"
+
+    echo -e "$final_output"
+    
 done
