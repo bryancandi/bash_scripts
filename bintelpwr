@@ -1,6 +1,6 @@
 #!/bin/bash
 # bintelpwr
-# Display current package and core wattage for INTEL Processors
+# Display current power draw in watts for INTEL Processors
 # Copyright (C) 2024 by Bryan Candiliere
 #
 
@@ -58,13 +58,13 @@ while true; do
         # Get device names
         name=$(cat "/sys/class/powercap/$device/name")
 
-        # Get initial package/core power usage
+        # Get initial power usage
         initial_power=$(cat "/sys/class/powercap/$device/energy_uj")
 
         # Sleep for one second for accurate power measurement
         sleep 1
 
-        # Get current package/core power usage
+        # Get current power usage
         current_power=$(cat "/sys/class/powercap/$device/energy_uj")
 
         # Calculate power difference and convert from microjoules (uJ) to watts
