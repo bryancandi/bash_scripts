@@ -10,6 +10,11 @@ CPU core frequency and core temperature monitoring script - *coretemp sensors ma
 
 ---
 
+### bintelpwr:
+Display current power draw in watts for INTEL Processors.
+
+---
+
 #### Both scripts default to a 2 second refresh interval and temperatures in Celsius unless specified with launch options.
 
 Examples:<br>
