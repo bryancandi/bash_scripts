@@ -44,7 +44,7 @@ f_cpu_type() {
 
 #powercap_devices=$(ls /sys/class/powercap/intel-rapl:*/energy_uj)
 #powercap_names=$(ls /sys/class/powercap/intel-rapl:*/name)
-powercap_devices=$(ls /sys/class/powercap/ | grep :)
+powercap_devices=$(ls /sys/class/powercap/ | grep intel-rapl:)
 
 while true; do
     f_cpu_type
