@@ -70,7 +70,7 @@ while true; do
         # Calculate power difference and convert from microjoules (uJ) to watts
         power_diff=$(echo "scale=2; ($current_power - $initial_power) / 1000000" | bc)
 
-        # Get device number and remove text for sorting.
+        # Get device ID number and remove text for sorting
         device_num=$(echo "$device" | sed 's/[^0-9:]//g; s/://')
 
         # Display current CPU power usage and power difference
@@ -86,7 +86,7 @@ while true; do
     header_line_cpu=$(head -n 1 <<< "$output")
     powercap_device_lines=$(tail -n +2 <<< "$output")
 
-    # Sort the devices alphabetically by the first field (device name)
+    # Sort the devices by the first field (device number)
     sorted_powercap_device_lines=$(echo "$powercap_device_lines" | sort -k 1,1)
 
     # Combine the first line with the sorted remaining lines
