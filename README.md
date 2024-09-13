@@ -66,4 +66,4 @@ Run `sudo dpkg -r bcpuinfo` to uninstall.<br>
 
 ![Alt text](/screenshots/bthinkfo.png?raw=true "bthinkfo")
 ![Alt text](/screenshots/bcpuinfo.png?raw=true "bcpuinfo")
-![Alt text](/screenshots/bcpuinfo.png?raw=true "bintelpwr")
+![Alt text](/screenshots/bintelpwr.png?raw=true "bintelpwr")
