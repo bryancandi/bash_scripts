@@ -11,7 +11,7 @@ CPU core frequency and core temperature monitoring script - *coretemp sensors ma
 ---
 
 ### bintelpwr:
-Display current power draw in watts for INTEL Processors.
+For INTEL Processors. Display current energy consumption in watts using Intel Running Average Power Limit (RAPL).
 
 ---
 
