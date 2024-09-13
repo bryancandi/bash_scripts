@@ -1,8 +1,12 @@
 #!/bin/bash
 # bintelpwr
-# Display current power draw in watts for INTEL Processors
+# For INTEL Processors
+# Display current energy consumption in watts using Intel Running Average Power Limit (RAPL).
+#
 # Copyright (C) 2024 by Bryan Candiliere
 #
+
+version="bintelpwr 0.0.1" # 09-12-2024
 
 # Trap Ctrl-C and exit
 trap ctrl_c INT
