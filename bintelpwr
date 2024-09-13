@@ -8,7 +8,6 @@
 
 version="bintelpwr 0.0.1" # 09-12-2024
 
-# Trap Ctrl-C and exit
 trap ctrl_c INT
 
 ctrl_c() {
@@ -16,7 +15,6 @@ ctrl_c() {
     exit 0
 }
 
-# Function to check if the script is running as root
 check_root() {
     if [[ "$EUID" -ne 0 ]]
         then echo "This script requires root privileges to run."
@@ -27,7 +25,6 @@ check_root() {
 # Run check function
 check_root
 
-# Function to check if the powercap/intel-rapl exists
 check_powercap_file() {
     if [[ ! -d /sys/class/powercap/intel-rapl ]]; then
         echo "Powercap not found. Exiting."
@@ -49,6 +46,8 @@ f_cpu_type() {
 #powercap_devices=$(ls /sys/class/powercap/intel-rapl:*/energy_uj)
 #powercap_names=$(ls /sys/class/powercap/intel-rapl:*/name)
 powercap_devices=$(ls /sys/class/powercap/ | grep intel-rapl:)
+separator_line="-----------------------------------"
+message_line="Press Ctrl-C to exit."
 
 while true; do
     f_cpu_type
@@ -58,7 +57,7 @@ while true; do
     printf "\033[1m%s\033[0m\n" "$cpu_type"
 
     for device in $powercap_devices; do
-        (
+    (
         # Get device names
         name=$(cat "/sys/class/powercap/$device/name")
 
@@ -78,23 +77,23 @@ while true; do
         device_num=$(echo "$device" | sed 's/[^0-9:]//g; s/://')
 
         # Display current CPU power usage and power difference
-        #echo "$name: $power_diff watts" | column -t
+        #echo "$device_num $name: $power_diff watts" | column -t
         printf "%-5s %-15s %s\n" "$device_num" "$name:" "$power_diff watts"
-        ) &
+    ) &
 
     done)
 
     wait
 
     # Separate the output into the first line and powercap devices to be sorted
-    header_line_cpu=$(head -n 1 <<< "$output")
+    header_cpu_line=$(head -n 1 <<< "$output")
     powercap_device_lines=$(tail -n +2 <<< "$output")
 
     # Sort the devices by the first field (device number)
     sorted_powercap_device_lines=$(echo "$powercap_device_lines" | sort -k 1,1)
 
-    # Combine the first line with the sorted remaining lines
-    final_output="$header_line_cpu\n\n$sorted_powercap_device_lines"
+    # Combine lines for final formatted output
+    final_output="$header_cpu_line\n$separator_line\n\n$sorted_powercap_device_lines\n\n$separator_line\n$message_line"
 
     echo -e "$final_output"
 
