@@ -6,8 +6,8 @@
 # Copyright (C) 2024 by Bryan Candiliere
 #
 
-version="bintelpwr 0.0.2"    # 09-14-2024
-num="1"    # 1 second refresh interval
+version="bintelpwr 0.0.2" # 09-14-2024
+num="1" # 1 second refresh interval
 
 show_help() {
     echo "Usage: $0 [options]"
@@ -100,14 +100,15 @@ f_cpu_type() {
 #powercap_names=$(ls /sys/class/powercap/intel-rapl:*/name)
 powercap_devices=$(ls /sys/class/powercap/ | grep intel-rapl:)
 separator_line="-----------------------------------"
-message_line="Press Ctrl-C to exit."
+sleep_line="Getting initial power measurements... (sleeping $num seconds)"
+exit_line="Press Ctrl-C to exit."
 
 while true; do
 
     # Display this message only before the first loop
     if [[ $loop_count -eq 0 ]]; then
         clear
-        echo "Getting initial power measurements... (sleeping "$num" seconds)"
+        echo -e "$sleep_line\n$exit_line"
     fi
 
     # Convert from seconds to uJ
@@ -156,7 +157,7 @@ while true; do
     sorted_powercap_device_lines=$(echo "$powercap_device_lines" | sort -k 1,1)
 
     # Combine lines for final formatted output
-    final_output="$header_cpu_line\n$separator_line\n\n$sorted_powercap_device_lines\n\n$separator_line\n$message_line"
+    final_output="$header_cpu_line\n$separator_line\n\n$sorted_powercap_device_lines\n\n$separator_line\n$exit_line"
 
     echo -e "$final_output"
 
