@@ -6,7 +6,60 @@
 # Copyright (C) 2024 by Bryan Candiliere
 #
 
-version="bintelpwr 0.0.1" # 09-12-2024
+version="bintelpwr 0.0.2"    # 09-14-2024
+num="1"    # 1 second refresh interval
+
+show_help() {
+    echo "Usage: $0 [options]"
+    echo -e "For INTEL Processors. Display current energy consumption in watts using Intel Running Average Power Limit (RAPL).\n"
+    echo "Options:"
+    echo "  -h, --help    Display this help message"
+    echo "  -t, --time    Specify refresh interval in seconds"
+    echo "  -v, --version Display script version"
+}
+
+for arg in "$@"; do
+  shift
+  case "$arg" in
+    '--help')    set -- "$@" '-h'   ;;
+    '--time')    set -- "$@" '-t'   ;;
+    '--version') set -- "$@" '-v'   ;;
+    *)           set -- "$@" "$arg" ;;
+  esac
+done
+
+while getopts ":ht:v" option; do
+    case "${option}" in
+        h)
+            show_help
+            exit 0
+            ;;
+        t | time)
+            num="$OPTARG"
+            if [[ "$num" =~ ^[0-9]+$ ]] && [[ "$num" != 0 ]]; then
+                num="$OPTARG"
+            else
+                echo "Invalid input: $OPTARG. Please enter a positive whole number."
+                exit 1
+            fi
+            ;;
+        v)
+            echo "${version}"
+            exit 0
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            show_help
+            exit 1
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument." >&2
+            echo "Try 'bintelpwr -h' for more information."
+            #show_help
+            exit 1
+            ;;
+    esac
+done
 
 trap ctrl_c INT
 
@@ -50,6 +103,16 @@ separator_line="-----------------------------------"
 message_line="Press Ctrl-C to exit."
 
 while true; do
+
+    # Display this message only before the first loop
+    if [[ $loop_count -eq 0 ]]; then
+        clear
+        echo "Getting initial power measurements... (sleeping "$num" seconds)"
+    fi
+
+    # Convert from seconds to uJ
+    num_mil="$((num * 1000000))"
+
     f_cpu_type
 
     output=$(clear
@@ -65,13 +128,13 @@ while true; do
         initial_power=$(cat "/sys/class/powercap/$device/energy_uj")
 
         # Sleep for one second for accurate power measurement
-        sleep 1
+        sleep "$num"
 
         # Get current power usage
         current_power=$(cat "/sys/class/powercap/$device/energy_uj")
 
         # Calculate power difference and convert from microjoules (uJ) to watts
-        power_diff=$(echo "scale=2; ($current_power - $initial_power) / 1000000" | bc)
+        power_diff=$(echo "scale=2; ($current_power - $initial_power) / $num_mil" | bc)
 
         # Get device ID number and remove text for sorting
         device_num=$(echo "$device" | sed 's/[^0-9:]//g; s/://')
@@ -96,5 +159,8 @@ while true; do
     final_output="$header_cpu_line\n$separator_line\n\n$sorted_powercap_device_lines\n\n$separator_line\n$message_line"
 
     echo -e "$final_output"
+
+    # Count loops for initial power message
+    loop_count=$((loop_count + 1))
 
 done
