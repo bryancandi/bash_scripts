@@ -15,7 +15,7 @@ For INTEL Processors. Display current energy consumption in watts using Intel Ru
 
 ---
 
-#### Scripts `bcpuinfo` & `bthinkfo` default to a 2 second refresh interval and temperatures in Celsius unless specified with launch options. Script `bintelpwr` refreshes every 1 second unless specified with launch option `-t`.
+#### Scripts `bcpuinfo` and `bthinkfo` default to a 2 second refresh interval and temperatures in Celsius unless specified with launch options. Script `bintelpwr` refreshes every 1 second unless specified with launch option `-t`.
 
 Examples:<br>
 `bcpuinfo` : Run script with default values.<br>
