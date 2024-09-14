@@ -100,15 +100,15 @@ f_cpu_type() {
 #powercap_names=$(ls /sys/class/powercap/intel-rapl:*/name)
 powercap_devices=$(ls /sys/class/powercap/ | grep intel-rapl:)
 separator_line="-----------------------------------"
-sleep_line="Getting initial power measurements... (sleeping $num seconds)"
-exit_line="Press Ctrl-C to exit."
+sleep_message="Getting initial power measurements... (sleeping $num seconds)"
+exit_message="Press Ctrl-C to exit."
 
 while true; do
 
     # Display this message only before the first loop
     if [[ $loop_count -eq 0 ]]; then
         clear
-        echo -e "$sleep_line\n$exit_line"
+        echo -e "$sleep_message\n$exit_message"
     fi
 
     # Convert from seconds to uJ
@@ -157,7 +157,7 @@ while true; do
     sorted_powercap_device_lines=$(echo "$powercap_device_lines" | sort -k 1,1)
 
     # Combine lines for final formatted output
-    final_output="$header_cpu_line\n$separator_line\n\n$sorted_powercap_device_lines\n\n$separator_line\n$exit_line"
+    final_output="$header_cpu_line\n$separator_line\n\n$sorted_powercap_device_lines\n\n$separator_line\n$exit_message"
 
     echo -e "$final_output"
 
