@@ -96,8 +96,6 @@ f_cpu_type() {
     fi
 }
 
-#powercap_devices=$(ls /sys/class/powercap/intel-rapl:*/energy_uj)
-#powercap_names=$(ls /sys/class/powercap/intel-rapl:*/name)
 powercap_devices=$(ls /sys/class/powercap/ | grep intel-rapl:)
 separator_line="-----------------------------------"
 sleep_message="Getting initial power measurements... (sleeping $num seconds)"
@@ -108,7 +106,7 @@ while true; do
     # Display this message only before the first loop
     if [[ $loop_count -eq 0 ]]; then
         clear
-        echo -e "$sleep_message\n$exit_message"
+        echo -e "$sleep_message\n\n$exit_message"
     fi
 
     # Convert from seconds to uJ
@@ -128,7 +126,7 @@ while true; do
         # Get initial power usage
         initial_power=$(cat "/sys/class/powercap/$device/energy_uj")
 
-        # Sleep for one second for accurate power measurement
+        # Sleep for one second per million uJ for accurate power measurement
         sleep "$num"
 
         # Get current power usage
