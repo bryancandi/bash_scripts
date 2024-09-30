@@ -4,11 +4,11 @@ LOCAL_INSTALL_DIR=~/bin
 SYSTEM_INSTALL_DIR=/usr/bin
 
 all:
-	@echo Run \'make install\' to install \'bthinkfo\'.
-	@echo Run \'make uninstall\' to uninstall \'bthinkfo\'.
+	@echo Run \'make install\' to install \'bcpuinfo\'.
+	@echo Run \'make uninstall\' to uninstall \'bcpuinfo\'.
 	@echo
-	@echo Run \'make install-local\' to install \'bthinkfo\' locally for current user.
-	@echo Run \'make uninstall-local\' to uninstall \'bthinkfo\' locally for current user.
+	@echo Run \'make install-local\' to install \'bcpuinfo\' locally for current user.
+	@echo Run \'make uninstall-local\' to uninstall \'bcpuinfo\' locally for current user.
 
 install:
 	sudo cp $(SCRIPT) $(SYSTEM_INSTALL_DIR)
